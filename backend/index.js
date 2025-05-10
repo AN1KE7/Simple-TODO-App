@@ -1,17 +1,18 @@
 const express = require("express");
 const { CreateTask, TaskId } = require("./types");
-const { Task } = require("./database/mongodb");
+const { Todos } = require("./database/mongodb");
+const cors = require("cors")
 const app = express();
 const PORT = 3000;
 
 app.use(express.json());
+app.use(cors());
 
 app.get("/todo" ,async function (req,res,next){
     try{
-        const tasks = await Task.find();
+        const todos = await Todos.find();
         res.status(200).json({
-            success:true,
-            tasks: tasks
+            todos:todos
         })
     }
     catch(error){
@@ -39,7 +40,7 @@ app.post("/todo" ,async function (req,res){
     }
        
     try{
-        await Task.create(newTask);
+        await Todos.create(newTask);
         res.status(201).json({ msg:"Task created"});
     }
     catch(error){
@@ -53,19 +54,16 @@ app.post("/todo" ,async function (req,res){
 
 app.put("/completed" ,async function (req,res){
    
-    const doneTaskId = req.body.id;
-
-    
-    const parsedInput = TaskId.safeParse(doneTaskId);
+    const parsedInput = TaskId.safeParse(req.body);
 
     if(parsedInput.success!=true){
-        res.status(411).json({
+        res.status(401).json({
            msg : "Wrong inputs sent."
         })
     }
        
     try{
-        await Task.findByIdAndUpdate({_id : req.body.id} , {completed : true});
+        await Todos.findByIdAndUpdate({_id : req.body.id} , {completed : true});
         res.status(200).json({
             msg:"Task marked as done."
         })

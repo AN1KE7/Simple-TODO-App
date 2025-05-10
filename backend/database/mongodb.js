@@ -13,6 +13,6 @@ const TodoSchema = new mongoose.Schema({
     completed:Boolean
 });
 
-const Task = mongoose.model("Task" , TodoSchema);
+const Todos = mongoose.model("Todos" , TodoSchema);
 
-module.exports = { Task }
+module.exports = { Todos }
